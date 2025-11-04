@@ -1,0 +1,28 @@
+# Simple metrics forwarder - scrapes python-app and sends to Mimir
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: metrics-scraper
+spec:
+  schedule: "*/1 * * * *"  # Every minute
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: scraper
+            image: curlimages/curl:latest
+            command:
+            - /bin/sh
+            - -c
+            - |
+              # Scrape metrics from python-app
+              curl -s http://python-app-metrics:8000/metrics | \
+              # Send to Mimir
+              curl -X POST \
+                -H "Content-Type: application/x-protobuf" \
+                -H "X-Prometheus-Remote-Write-Version: 0.1.0" \
+                --data-binary @- \
+                http://mimir-nginx.monitoring.svc.cluster.local:80/api/v1/push || true
+

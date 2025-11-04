@@ -1,0 +1,31 @@
+# Python app values for DEV environment
+
+replicaCount: 1
+
+image:
+  repository: lgtm-demo/python-app
+  tag: dev
+  pullPolicy: IfNotPresent
+
+service:
+  port: 8000
+  healthPort: 8080
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+env:
+  LOG_LEVEL: INFO
+  METRICS_PORT: "8000"
+
+extraEnv:
+  - name: ENVIRONMENT
+    value: "dev"
+  - name: LOKI_URL
+    value: "http://loki.monitoring.svc.cluster.local:3100"
+

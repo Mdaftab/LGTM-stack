@@ -1,0 +1,36 @@
+# Tempo values for DEV environment
+# Chart: grafana/tempo (official)
+
+tempo:
+  storage:
+    trace:
+      backend: local
+      local:
+        path: /var/tempo/traces
+  receivers:
+    jaeger:
+      protocols:
+        thrift_http:
+        grpc:
+    otlp:
+      protocols:
+        http:
+        grpc:
+
+persistence:
+  enabled: true
+  size: 5Gi
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+service:
+  type: ClusterIP
+
+replicas: 1
+

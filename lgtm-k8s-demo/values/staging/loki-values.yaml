@@ -1,0 +1,55 @@
+# Loki values for DEV environment
+# Chart: grafana/loki (official)
+
+loki:
+  auth_enabled: false
+  commonConfig:
+    replication_factor: 1
+  storage:
+    type: 'filesystem'
+  limits_config:
+    retention_period: 30m
+    # Delete logs older than 30 minutes
+  compactor:
+    retention_enabled: true
+    retention_delete_delay: 5m
+
+# Single binary mode for dev
+deploymentMode: SingleBinary
+
+singleBinary:
+  replicas: 1
+  persistence:
+    enabled: true
+    size: 5Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# Disable other components
+backend:
+  replicas: 0
+read:
+  replicas: 0
+write:
+  replicas: 0
+
+gateway:
+  enabled: false
+
+monitoring:
+  selfMonitoring:
+    enabled: false
+    grafanaAgent:
+      installOperator: false
+  lokiCanary:
+    enabled: false
+
+# Disable Helm tests (requires self-monitoring)
+test:
+  enabled: false
+

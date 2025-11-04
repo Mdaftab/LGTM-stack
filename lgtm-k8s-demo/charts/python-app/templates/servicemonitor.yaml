@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: python-app-metrics
+  labels:
+    app: python-app
+spec:
+  selector:
+    app: python-app
+  ports:
+  - name: metrics
+    port: 8000
+    targetPort: metrics
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  labels:
+    app: prometheus-config
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+    scrape_configs:
+    - job_name: 'python-app'
+      kubernetes_sd_configs:
+      - role: service
+        namespaces:
+          names:
+          - development
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_service_label_app]
+        regex: python-app
+        action: keep
+      - source_labels: [__meta_kubernetes_service_name]
+        target_label: service
+      metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'python_gc.*|process_.*'
+        action: drop
+

@@ -1,0 +1,64 @@
+# Prometheus values for DEV environment
+# This scrapes metrics from python-app and forwards to Mimir
+
+server:
+  enabled: true
+  global:
+    scrape_interval: 15s
+    evaluation_interval: 15s
+  
+  persistentVolume:
+    enabled: false  # No need for local storage, using remote write
+  
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  
+  # Remote write to Mimir
+  remoteWrite:
+    - url: http://mimir-nginx.monitoring.svc.cluster.local:80/api/v1/push
+      queueConfig:
+        maxSamplesPerSend: 1000
+        batchSendDeadline: 5s
+  
+  # Scrape configs
+  extraScrapeConfigs: |
+    - job_name: 'python-app'
+      kubernetes_sd_configs:
+        - role: endpoints
+          namespaces:
+            names:
+              - development
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_service_label_app]
+          regex: python-app
+          action: keep
+        - source_labels: [__meta_kubernetes_endpoint_port_name]
+          regex: metrics
+          action: keep
+        - source_labels: [__meta_kubernetes_namespace]
+          target_label: namespace
+        - source_labels: [__meta_kubernetes_service_name]
+          target_label: service
+      metric_relabel_configs:
+        # Drop Python internal metrics to reduce volume
+        - source_labels: [__name__]
+          regex: 'python_gc.*|process_.*'
+          action: drop
+
+alertmanager:
+  enabled: false
+
+prometheus-node-exporter:
+  enabled: false
+
+prometheus-pushgateway:
+  enabled: false
+
+kube-state-metrics:
+  enabled: false
+
