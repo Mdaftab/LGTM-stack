@@ -152,13 +152,13 @@ def run_health_server():
 
 
 if __name__ == "__main__":
-    logger.info(f"🚀 Starting Python App - Environment: {ENVIRONMENT}")
-    logger.info(f"📊 Metrics exposed on port {METRICS_PORT}")
-    logger.info(f"🪵  Pushing logs to Loki at {LOKI_URL}")
+    logger.info(f"Starting Python App - Environment: {ENVIRONMENT}")
+    logger.info(f"Metrics exposed on port {METRICS_PORT}")
+    logger.info(f"Pushing logs to Loki at {LOKI_URL}")
     
     # Start Prometheus metrics server
     start_http_server(METRICS_PORT)
-    logger.info(f"✅ Prometheus metrics server started on :{METRICS_PORT}/metrics")
+    logger.info(f"Prometheus metrics server started on :{METRICS_PORT}/metrics")
     
     # Start health check server
     threading.Thread(target=run_health_server, daemon=True).start()

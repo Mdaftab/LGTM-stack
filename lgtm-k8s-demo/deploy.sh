@@ -7,25 +7,25 @@ set -euo pipefail
 ENV="${1:-dev}"
 CLUSTER_NAME="lgtm-cluster"
 
-echo "🚀 LGTM Stack Deployment - Environment: $ENV"
+echo "LGTM Stack Deployment - Environment: $ENV"
 echo "================================================"
 echo ""
 
 # ============================================================================
 # STEP A: Check and install prerequisites on macOS
 # ============================================================================
-echo "📋 STEP A: Checking prerequisites..."
+echo "STEP A: Checking prerequisites..."
 
 check_and_install() {
   local tool=$1
   local install_cmd=$2
   
   if command -v "$tool" &> /dev/null; then
-    echo "  ✅ $tool is installed"
+    echo "  [OK] $tool is installed"
   else
-    echo "  ❌ $tool not found. Installing..."
+    echo "  [MISSING] $tool not found. Installing..."
     eval "$install_cmd"
-    echo "  ✅ $tool installed"
+    echo "  [OK] $tool installed"
   fi
 }
 
